@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+# Sistem bağımlılıkları
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates nodejs npm && \
+    rm -rf /var/lib/apt/lists/*
+
+# Claude Code CLI (SDK modu için gerekli)
+RUN npm install -g @anthropic-ai/claude-code
+
+# ccproxy-api'yi PyPI'dan kur (kaynak derleme yok, VCS versiyon sorunu yok)
+RUN pip install --no-cache-dir ccproxy-api
+
+# Render ortam değişkenleri
+ENV SERVER__HOST=0.0.0.0
+ENV SERVER__PORT=${PORT}
+
+# Servisi başlat (SDK pool açık)
+CMD ["sh","-lc","ccproxy --host 0.0.0.0 --port $PORT --sdk-enable-pool"]
