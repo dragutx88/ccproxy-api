@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ccproxy
+    name: ccproxy-api
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile.render
