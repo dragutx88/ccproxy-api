@@ -12,16 +12,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get update && apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# Claude Code resmi CLI (SDK modu için)
+# Claude Code CLI (SDK modunun bağımlılığı)
 RUN npm i -g @anthropic-ai/claude-code
 
-# ccproxy-api server (pin'li)
+# ccproxy server (PyPI)
 RUN pip install --no-cache-dir "ccproxy-api==0.1.5"
 
-# ccproxy env ile bind edilecek (Render $PORT'u enjekte eder)
-ENV SERVER__HOST=0.0.0.0
-
+# Çalışma dizini ve start script
 WORKDIR /app
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
-# Bayraksız başlat: port/host'u ENV ile veriyoruz (sürüm farkı sorunlarını önler)
-CMD ["sh","-lc","SERVER__PORT=${PORT:-8000} ccproxy --sdk-enable-pool"]
+# Sadece ENTRYPOINT/CMD: bayrak yok. start.sh ENV ile bind eder.
+CMD ["/app/start.sh"]
