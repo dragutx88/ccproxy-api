@@ -3,12 +3,16 @@ services:
     name: ccproxy-api
     runtime: docker
     plan: free
-    dockerfilePath: ./Dockerfile
-    dockerCommand: ccproxy --host 0.0.0.0 --port $PORT
+    dockerfilePath: ./Dockerfile.render
+    dockerCommand: ccproxy --host 0.0.0.0 --port ${PORT} --sdk-enable-pool
     healthCheckPath: /health
     envVars:
-      - key: SERVER__HOST
-        value: 0.0.0.0
-      # Render tek tıkta bir gizli anahtar üretsin:
+      # ccproxy'ye gelen çağrıları korumak için token (Render otomatik üretir)
       - key: SECURITY__AUTH_TOKEN
         generateValue: true
+      # SDK'nin Anthropic'e bağlanması için API key (Render ilk deploy'da isteyecek)
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      # (İsteğe bağlı) Dosya yaz/oku hedef klasörünü sabitle
+      # - key: CLAUDE_CODE_OPTIONS__CWD
+      #   value: /app/repo
