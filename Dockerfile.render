@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-# Sistem bağımlılıkları
+# Sistem bağımlılıkları (CLI için node/npm gerekli)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates nodejs npm && \
     rm -rf /var/lib/apt/lists/*
@@ -11,9 +11,6 @@ RUN npm install -g @anthropic-ai/claude-code
 # ccproxy-api'yi PyPI'dan kur (kaynak derleme yok, VCS versiyon sorunu yok)
 RUN pip install --no-cache-dir ccproxy-api
 
-# Render ortam değişkenleri
-ENV SERVER__HOST=0.0.0.0
-ENV SERVER__PORT=${PORT}
-
-# Servisi başlat (SDK pool açık)
-CMD ["sh","-lc","ccproxy --host 0.0.0.0 --port $PORT --sdk-enable-pool"]
+# Servisi başlat: Render bize $PORT verir; ccproxy bu flag'i destekler
+# (ana komutta --host YOK; permission-handler alt komutunda var)
+CMD ["sh","-lc","ccproxy --port $PORT --sdk-enable-pool"]
