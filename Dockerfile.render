@@ -1,16 +1,27 @@
+# ccproxy-api + Claude Code CLI içeren minimal imaj
 FROM python:3.11-slim
 
-# Sistem bağımlılıkları (CLI için node/npm gerekli)
+ENV PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Sistem bağımlılıkları + Node.js (Claude Code CLI için)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates nodejs npm && \
+      curl ca-certificates gnupg git && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get update && apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# Claude Code CLI (SDK modu için gerekli)
-RUN npm install -g @anthropic-ai/claude-code
+# Claude Code resmi CLI (SDK modu için gerekli)
+RUN npm i -g @anthropic-ai/claude-code
 
-# ccproxy-api'yi PyPI'dan kur (kaynak derleme yok, VCS versiyon sorunu yok)
-RUN pip install --no-cache-dir ccproxy-api
+# ccproxy-api (server)
+RUN pip install --no-cache-dir "ccproxy-api==0.1.5"
 
-# Servisi başlat: Render bize $PORT verir; ccproxy bu flag'i destekler
-# (ana komutta --host YOK; permission-handler alt komutunda var)
-CMD ["sh","-lc","ccproxy --port $PORT --sdk-enable-pool"]
+# Çalışma dizini
+WORKDIR /app
+
+# Render kendi PORT env’ini enjekte eder; shell üzerinden genişletelim
+# serve alt-komutuna --host/--port veriyoruz (kritik nokta)
+CMD ["sh", "-c", "ccproxy serve --host 0.0.0.0 --port ${PORT:-8000} --sdk-enable-pool"]
