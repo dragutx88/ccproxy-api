@@ -1,8 +1,10 @@
 services:
   - type: web
     name: ccproxy
-    env: docker
+    runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile.render
+    # Start Command'ı da burada net veriyoruz ki eski --port/--host kalıntıları override edilsin
+    dockerCommand: sh -lc "SERVER__HOST=0.0.0.0 SERVER__PORT=$PORT ccproxy --sdk-enable-pool"
     healthCheckPath: /health
     autoDeploy: true
