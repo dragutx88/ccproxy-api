@@ -1,15 +1,9 @@
 services:
   - type: web
-    name: ccproxy-api
-    runtime: docker
+    name: ccproxy
+    env: docker
     plan: free
     dockerfilePath: ./Dockerfile.render
-    dockerCommand: ccproxy --port ${PORT} --sdk-enable-pool
+    dockerCommand: ccproxy serve --host 0.0.0.0 --port $PORT --sdk-enable-pool
     healthCheckPath: /health
-    envVars:
-      # SDK'nin Anthropic'e bağlanması için zorunlu kimlik
-      - key: ANTHROPIC_API_KEY
-        sync: false
-      # (İsteğe bağlı) Çalışma klasörünü sabitlemek istersen:
-      # - key: CLAUDE_CODE_OPTIONS__CWD
-      #   value: /app/repo
+    autoDeploy: true
