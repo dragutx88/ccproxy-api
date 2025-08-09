@@ -4,15 +4,12 @@ services:
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile.render
-    dockerCommand: ccproxy --host 0.0.0.0 --port ${PORT} --sdk-enable-pool
+    dockerCommand: ccproxy --port ${PORT} --sdk-enable-pool
     healthCheckPath: /health
     envVars:
-      # ccproxy'ye gelen çağrıları korumak için token (Render otomatik üretir)
-      - key: SECURITY__AUTH_TOKEN
-        generateValue: true
-      # SDK'nin Anthropic'e bağlanması için API key (Render ilk deploy'da isteyecek)
+      # SDK'nin Anthropic'e bağlanması için zorunlu kimlik
       - key: ANTHROPIC_API_KEY
         sync: false
-      # (İsteğe bağlı) Dosya yaz/oku hedef klasörünü sabitle
+      # (İsteğe bağlı) Çalışma klasörünü sabitlemek istersen:
       # - key: CLAUDE_CODE_OPTIONS__CWD
       #   value: /app/repo
