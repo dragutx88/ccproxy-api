@@ -4,6 +4,5 @@ services:
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile.render
-    # ÖNEMLİ: dockerCommand YOK → Dockerfile'daki CMD kullanılır.  :contentReference[oaicite:3]{index=3}
     healthCheckPath: /health
     autoDeploy: true
